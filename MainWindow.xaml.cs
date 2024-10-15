@@ -65,6 +65,7 @@ namespace oop2_Assignment2
 
             if (CheckWinner(board))
             {
+                UpdateScore();
                 MessageBox.Show($"Player {currentPlayer} wins!");
                 currentPlayer = RandomChoice() == playerXName ? "X" : "O";
                 playerXName = xPlayer.Text;
@@ -77,7 +78,6 @@ namespace oop2_Assignment2
                 {
                     currentPlayerOutput.Text = playerOName;
                 }
-                UpdateScore();
                 ClearBoard();
             }
             else if (IsBoardFull())
@@ -161,7 +161,7 @@ namespace oop2_Assignment2
             rowThreeBox2.Content = "";
             rowThreeBox3.Content = "";
 
-
+            
             rowOneBox1.IsEnabled = true;
             rowZeroBox2.IsEnabled = true;
             rowOneBox3.IsEnabled = true;
@@ -303,6 +303,8 @@ namespace oop2_Assignment2
 
             enter.IsEnabled = true;
 
+            playerXScore = 0;
+            playerOScore = 0;
             xPlayer.Clear();
             oPlayer.Clear();
             oScore.Clear();
