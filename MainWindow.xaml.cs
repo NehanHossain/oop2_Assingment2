@@ -13,16 +13,11 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 
 
-using System;
-using System.Linq;
-using System.Windows;
-using System.Windows.Controls;
-
 namespace oop2_Assignment2
 {
     public partial class MainWindow : Window
     {
-        private string currentPlayer = "X";
+        private string currentPlayer = "";
         private string playerXName = "";
         private string playerOName = "";
         private int playerXScore = 0;
@@ -34,23 +29,34 @@ namespace oop2_Assignment2
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Checks if there is a winner on the game board.
+        /// </summary>
+        /// <param name="boardGame">The current state of the game board.</param>
+        /// <returns>True if there is a winner, otherwise false.</returns>
         private bool CheckWinner(string[,] boardGame)
         {
-            // Check rows, columns, and diagonals for a winner
+            
             for (int index = 0; index < 3; index++)
             {
                 if ((boardGame[index, 0] == boardGame[index, 1] && boardGame[index, 1] == boardGame[index, 2] && !string.IsNullOrEmpty(boardGame[index, 0])) ||
                     (boardGame[0, index] == boardGame[1, index] && boardGame[1, index] == boardGame[2, index] && !string.IsNullOrEmpty(boardGame[0, index])))
                 {
-                    return true; // A winner has been found
+                    return true; 
                 }
             }
 
-            // Check diagonals
+            
             return (boardGame[0, 0] == boardGame[1, 1] && boardGame[1, 1] == boardGame[2, 2] && !string.IsNullOrEmpty(boardGame[0, 0])) ||
                    (boardGame[0, 2] == boardGame[1, 1] && boardGame[1, 1] == boardGame[2, 0] && !string.IsNullOrEmpty(boardGame[0, 2]));
         }
 
+        /// <summary>
+        /// Updates the game board with the current player's move.
+        /// </summary>
+        /// <param name="row">The row index of the move.</param>
+        /// <param name="col">The column index of the move.</param>
+        /// <param name="button">The button representing the move.</param>
         private void UpdateBoard(int row, int col, Button button)
         {
             board[row, col] = currentPlayer;
@@ -59,27 +65,64 @@ namespace oop2_Assignment2
 
             if (CheckWinner(board))
             {
-                MessageBox.Show($"Player {currentPlayer} wins!", "Game Over", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Player {currentPlayer} wins!");
+                currentPlayer = RandomChoice() == playerXName ? "X" : "O";
+                playerXName = xPlayer.Text;
+                playerOName = oPlayer.Text;
+                if (currentPlayer == "X")
+                {
+                    currentPlayerOutput.Text = playerXName;
+                }
+                else
+                {
+                    currentPlayerOutput.Text = playerOName;
+                }
                 UpdateScore();
-                ResetGame();
+                ClearBoard();
             }
             else if (IsBoardFull())
             {
-                MessageBox.Show("It's a draw!", "Game Over", MessageBoxButton.OK, MessageBoxImage.Information);
-                ResetGame();
+                MessageBox.Show("It's a draw!", "Game Over");
+                currentPlayer = RandomChoice() == playerXName ? "X" : "O";
+                playerXName = xPlayer.Text;
+                playerOName = oPlayer.Text;
+                if (currentPlayer == "X")
+                {
+                    currentPlayerOutput.Text = playerXName;
+                }
+                else
+                {
+                    currentPlayerOutput.Text = playerOName;
+                }
+                ClearBoard();
             }
             else
             {
                 currentPlayer = currentPlayer == "X" ? "O" : "X";
-                currentPlayerOutput.Text = $"Current Player: {currentPlayer}";
+                if (currentPlayer == "X")
+                {
+                    currentPlayerOutput.Text = playerXName;
+                }
+                else
+                {
+                    currentPlayerOutput.Text = playerOName;
+                }
+
             }
         }
 
+        /// <summary>
+        /// Checks if the game board is full.
+        /// </summary>
+        /// <returns>True if the board is full, otherwise false.</returns>
         private bool IsBoardFull()
         {
             return board.Cast<string>().All(cell => !string.IsNullOrEmpty(cell));
         }
 
+        /// <summary>
+        /// Updates the score of the current player.
+        /// </summary>
         private void UpdateScore()
         {
             if (currentPlayer == "X")
@@ -94,83 +137,186 @@ namespace oop2_Assignment2
             }
         }
 
-        private void ResetGame()
-        {
-            ClearBoard();
-            currentPlayer = RandomChoice() == playerXName ? "X" : "O";
-            currentPlayerOutput.Text = $"Current Player: {currentPlayer}";
-            enter.IsEnabled = true; // Allow name input again
-        }
-
+        /// <summary>
+        /// Clears the game board and resets all buttons.
+        /// </summary>
         private void ClearBoard()
         {
-            for (int i = 0; i < 3; i++)
+            for (int row = 0; row < 3; row++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int coloum = 0; coloum < 3; coloum++)
                 {
-                    board[i, j] = string.Empty;
-
-                    var button = GetButton(i, j);
-                    if (button != null)
-                    {
-                        button.IsEnabled = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Button at position ({i}, {j}) is null!");
-                    }
+                    board[row, coloum] = string.Empty;
+                    rowOneBox1.Content = "";
                 }
             }
+
+            rowOneBox1.Content = "";
+            rowZeroBox2.Content = "";
+            rowOneBox3.Content = "";
+            rowTwoBox1.Content = "";
+            rowTwoBox2.Content = "";
+            rowTwoBox3.Content = "";
+            rowThreeBox1.Content = "";
+            rowThreeBox2.Content = "";
+            rowThreeBox3.Content = "";
+
+
+            rowOneBox1.IsEnabled = true;
+            rowZeroBox2.IsEnabled = true;
+            rowOneBox3.IsEnabled = true;
+            rowTwoBox1.IsEnabled = true;
+            rowTwoBox2.IsEnabled = true;
+            rowTwoBox3.IsEnabled = true;
+            rowThreeBox1.IsEnabled = true;
+            rowThreeBox2.IsEnabled = true;
+            rowThreeBox3.IsEnabled = true;
+
         }
 
+        /// <summary>
+        /// Gets the button corresponding to the specified row and column.
+        /// </summary>
+        /// <param name="row">The row index.</param>
+        /// <param name="col">The column index.</param>
+        /// <returns>The button at the specified row and column.</returns>
         private Button GetButton(int row, int col)
         {
-            return (Button)this.FindName($"row{row}{col}"); // Match naming in XAML
+            return (Button)this.FindName($"row{row}{col}"); 
         }
 
+        /// <summary>
+        /// Handles the click event for the first button in the first row.
+        /// </summary>
         private void rowOneBox1_Click(object sender, RoutedEventArgs e) => UpdateBoard(0, 0, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the second button in the first row.
+        /// </summary>
         private void rowZeroBox2_Click(object sender, RoutedEventArgs e) => UpdateBoard(0, 1, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the third button in the first row.
+        /// </summary>
         private void rowOneBox3_Click(object sender, RoutedEventArgs e) => UpdateBoard(0, 2, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the first button in the second row.
+        /// </summary>
         private void rowTwoBox1_Click(object sender, RoutedEventArgs e) => UpdateBoard(1, 0, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the second button in the second row.
+        /// </summary>
         private void rowTwoBox2_Click(object sender, RoutedEventArgs e) => UpdateBoard(1, 1, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the third button in the second row.
+        /// </summary>
         private void rowTwoBox3_Click(object sender, RoutedEventArgs e) => UpdateBoard(1, 2, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the first button in the third row.
+        /// </summary>
         private void rowThreeBox1_Click(object sender, RoutedEventArgs e) => UpdateBoard(2, 0, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the second button in the third row.
+        /// </summary>
         private void rowThreeBox2_Click(object sender, RoutedEventArgs e) => UpdateBoard(2, 1, (Button)sender);
+
+        /// <summary>
+        /// Handles the click event for the third button in the third row.
+        /// </summary>
         private void rowThreeBox3_Click(object sender, RoutedEventArgs e) => UpdateBoard(2, 2, (Button)sender);
 
+        /// <summary>
+        /// Handles the click event for the enter button.
+        /// Initializes player names and checks for valid input.
+        /// Enables the game board for play and randomly selects the starting player.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void enter_Click(object sender, RoutedEventArgs e)
         {
             playerXName = xPlayer.Text;
             playerOName = oPlayer.Text;
+
             if (string.IsNullOrWhiteSpace(playerXName) || string.IsNullOrWhiteSpace(playerOName))
             {
                 MessageBox.Show("Please enter names for both players.", "Input Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            
+            rowOneBox1.IsEnabled = true;
+            rowZeroBox2.IsEnabled = true;
+            rowOneBox3.IsEnabled = true;
+            rowTwoBox1.IsEnabled = true;
+            rowTwoBox2.IsEnabled = true;
+            rowTwoBox3.IsEnabled = true;
+            rowThreeBox1.IsEnabled = true;
+            rowThreeBox2.IsEnabled = true;
+            rowThreeBox3.IsEnabled = true;
+
             currentPlayer = RandomChoice() == playerXName ? "X" : "O";
-            currentPlayerOutput.Text = $"Current Player: {currentPlayer}";
-            enter.IsEnabled = false; // Disable enter button after names are set
+            playerXName = xPlayer.Text;
+            playerOName = oPlayer.Text;
+            if (currentPlayer == "X")
+            {
+                currentPlayerOutput.Text = playerXName;
+            }
+            else
+            {
+                currentPlayerOutput.Text = playerOName;
+            }
+
+            enter.IsEnabled = false;
         }
 
+        /// <summary>
+        /// Randomly selects a starting player.
+        /// </summary>
+        /// <returns>The name of the randomly chosen player.</returns>
         private string RandomChoice()
         {
             Random random = new Random();
             return random.Next(2) == 0 ? playerXName : playerOName;
         }
 
+        /// <summary>
+        /// restarts the entire program
+        /// </summary>
         private void restartButton_Click(object sender, RoutedEventArgs e)
         {
-            ResetGame();
+            ClearBoard();
+
+            rowOneBox1.IsEnabled = false;
+            rowZeroBox2.IsEnabled = false;
+            rowOneBox3.IsEnabled = false;
+            rowTwoBox1.IsEnabled = false;
+            rowTwoBox2.IsEnabled = false;
+            rowTwoBox3.IsEnabled = false;
+            rowThreeBox1.IsEnabled = false;
+            rowThreeBox2.IsEnabled = false;
+            rowThreeBox3.IsEnabled = false;
+
+            enter.IsEnabled = true;
+
+            xPlayer.Clear();
+            oPlayer.Clear();
+            oScore.Clear();
+            xScore.Clear();
+            currentPlayerOutput.Clear();
         }
 
+        /// <summary>
+        /// exzits the program
+        /// </summary>
         private void exitButton_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
-        private void currentPlayer_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            // You can handle text changed event here if necessary
-        }
     }
 }
