@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿//Author: Nehan Hossain
+//Date created: october 10, 2024
+//Date last modified : october 14, 2024
+// Project: assignment 2
+// Description:This file contains all the C# code for oop2_Assignment2
+
+//inports
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,11 +19,12 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-
+//name space
 namespace oop2_Assignment2
 {
     public partial class MainWindow : Window
     {
+        // varible declarations
         private string currentPlayer = "";
         private string playerXName = "";
         private string playerOName = "";
@@ -36,7 +44,7 @@ namespace oop2_Assignment2
         /// <returns>True if there is a winner, otherwise false.</returns>
         private bool CheckWinner(string[,] boardGame)
         {
-            
+            //checks if there is a winner
             for (int index = 0; index < 3; index++)
             {
                 if ((boardGame[index, 0] == boardGame[index, 1] && boardGame[index, 1] == boardGame[index, 2] && !string.IsNullOrEmpty(boardGame[index, 0])) ||
@@ -46,7 +54,7 @@ namespace oop2_Assignment2
                 }
             }
 
-            
+            // otherwise return
             return (boardGame[0, 0] == boardGame[1, 1] && boardGame[1, 1] == boardGame[2, 2] && !string.IsNullOrEmpty(boardGame[0, 0])) ||
                    (boardGame[0, 2] == boardGame[1, 1] && boardGame[1, 1] == boardGame[2, 0] && !string.IsNullOrEmpty(boardGame[0, 2]));
         }
@@ -59,10 +67,12 @@ namespace oop2_Assignment2
         /// <param name="button">The button representing the move.</param>
         private void UpdateBoard(int row, int col, Button button)
         {
+
             board[row, col] = currentPlayer;
             button.Content = currentPlayer;
             button.IsEnabled = false;
 
+            // if there is an winner
             if (CheckWinner(board))
             {
                 UpdateScore();
@@ -80,6 +90,7 @@ namespace oop2_Assignment2
                 }
                 ClearBoard();
             }
+            //if there is a full bord
             else if (IsBoardFull())
             {
                 MessageBox.Show("It's a draw!", "Game Over");
@@ -96,6 +107,7 @@ namespace oop2_Assignment2
                 }
                 ClearBoard();
             }
+            //otherwise
             else
             {
                 currentPlayer = currentPlayer == "X" ? "O" : "X";
